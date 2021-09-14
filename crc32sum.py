@@ -63,11 +63,11 @@ class crc32sum_app:
             fi = file_info(file_name)
             try:
                 crc32_str = fi.read_crc32()
-                print("%s %s" %
-                      (crc32_str, fi.file_name.replace('\\', '/')))
+                sys.stdout.write("%s %s\n" %
+                                 (crc32_str, fi.file_name.replace('\\', '/')))
 
             except:
-                crc32_str = "-" * 8
+                crc32_str = "--------"
                 sys.stderr.write("%s: %s: No such file or directory\n" %
                                  (self.app_name, file_name))
                 result = "FAILED open or read"
@@ -153,12 +153,12 @@ def print_help(app_name):
     print help
     :return:
     """
-    print("Usage: " + app_name + " [OPTION]... [FILE]...")
-    print("Print or check CRC32 (32-bit) checksums.")
-    print("")
-    print("With no FILE, or when FILE is -, read standard input.")
-    print("")
-    print("  -c, --check      read CRC32 sums from the FILEs and check them")
+    sys.stdout.write("Usage: " + app_name + " [OPTION]... [FILE]...\n")
+    sys.stdout.write("Print or check CRC32 (32-bit) checksums.\n")
+    sys.stdout.write("\n")
+    sys.stdout.write("With no FILE, or when FILE is -, read standard input.\n")
+    sys.stdout.write("\n")
+    sys.stdout.write("  -c, --check      read CRC32 sums from the FILEs and check them\n")
 
 
 def main():
@@ -177,8 +177,8 @@ def main():
             print_help(app_name)
             return 1
         else:
-            print("%s: unknown option : %s / %s" % (app_name, opt, val))
-            print("Try '%s --help' for more infomation" % (app_name))
+            sys.stdout.write("%s: unknown option : %s / %s\n" % (app_name, opt, val))
+            sys.stdout.write("Try '%s --help' for more infomation\n" % (app_name))
             return 1
 
     if args is not None:
