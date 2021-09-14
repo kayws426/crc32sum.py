@@ -50,7 +50,7 @@ class crc32sum_app:
         self.read_fail_count = 0
         self.checksum_not_match_count = 0
 
-    def to_checksum_format(self, file_names):
+    def to_checksum_format(self, file_names="<stdin>"):
         """
         print CRC32 as checksum format
 
@@ -75,8 +75,8 @@ class crc32sum_app:
 
         return self.read_fail_count
 
-    def check(self, check_file_name, out_file_name = "stdout"):
-        if out_file_name == "stdout":
+    def check(self, check_file_name, out_file_name="<stdout>"):
+        if out_file_name == "<stdout>":
             out_file = sys.stdout
         else:
             out_file = open(out_file_name, 'w');
