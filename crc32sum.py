@@ -89,7 +89,7 @@ class crc32sum_app:
         except:
             sys.stderr.write("%s: %s: No such file or directory\n" %
                              (self.app_name, check_file_name))
-            os._exit(1)
+            return 1
 
         self.read_fail_count = 0
         self.checksum_not_match_count = 0
@@ -175,11 +175,11 @@ def main():
             p_check_mode = True
         elif opt in ["-h", "--help"]:
             print_help(app_name)
-            os._exit(1)
+            return 1
         else:
             print("%s: unknown option : %s / %s" % (app_name, opt, val))
             print("Try '%s --help' for more infomation" % (app_name))
-            os._exit(1)
+            return 1
 
     if args is not None:
         p_input_files.extend(args)
@@ -189,9 +189,11 @@ def main():
 
     app = crc32sum_app(app_name)
     ret = app.run(file_names = p_input_files, check_mode = p_check_mode, check_file = p_check_file)
-    os._exit(ret)
+    return ret
 
 
 if __name__ == "__main__":
-    main()
-
+    ret = main()
+    sys.stdout.flush()
+    sys.stderr.flush()
+    os._exit(ret)
