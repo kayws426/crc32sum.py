@@ -24,8 +24,8 @@ class file_info:
         """
         if self.check_sum_hex is None:
             if self.file_name == "-" or self.file_name == "<stdin>":
-                fp = sys.stdin
-                file_data = bytearray(fp.read(), 'utf-8')
+                fp = sys.stdin.buffer
+                file_data = fp.read()
             else:
                 fp = open(self.file_name, 'rb')
                 file_data = fp.read()
@@ -60,8 +60,9 @@ class crc32sum_app:
             fi = file_info(file_name)
             try:
                 crc32_str = fi.read_crc32()
-                sys.stdout.write("%s %s\n" %
-                                 (crc32_str, fi.file_name.replace('\\', '/')))
+                sys.stdout.buffer.write(
+                    bytes("%s %s\n" %
+                        (crc32_str, fi.file_name.replace('\\', '/')), 'utf-8'))
 
             except Exception as e:
                 result = "FAILED open or read"
@@ -73,7 +74,7 @@ class crc32sum_app:
 
     def check(self, check_file_name, out_file_name="<stdout>"):
         if out_file_name == "<stdout>":
-            out_file = sys.stdout
+            out_file = sys.stdout.buffer
         else:
             out_file = open(out_file_name, 'w');
 
@@ -105,9 +106,6 @@ class crc32sum_app:
             line_info = [line[0:8], line[8:]]
             file_checksum = line_info[0].strip()
             file_name = line_info[1].strip().strip('*')
-            file_name_encoded = file_name
-            if os.environ.get('SHLVL') != None:
-                file_name_encoded = file_name.encode('utf-8')
             result = ""
             try:
                 fi = file_info(file_name)
@@ -120,12 +118,12 @@ class crc32sum_app:
                     self.checksum_not_match_count += 1
             except:
                 sys.stderr.write("%s: %s: No such file or directory\n" %
-                                 (self.app_name, file_name_encoded))
+                                 (self.app_name, file_name))
                 sys.stderr.flush()
                 result = "FAILED open or read"
                 self.read_fail_count += 1
 
-            out_file.write("%s: %s\n" % (file_name_encoded, result))
+            out_file.write(bytes("%s: %s\n" % (file_name, result), 'utf-8'))
             out_file.flush()
 
         if self.read_fail_count > 0:
