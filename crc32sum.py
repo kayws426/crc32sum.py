@@ -23,15 +23,12 @@ class file_info:
         :return: CRC32 result
         """
         if self.check_sum_hex is None:
-            need_close = False
             if self.file_name == "-" or self.file_name == "<stdin>":
                 fp = sys.stdin
+                file_data = bytearray(fp.read(), 'utf-8')
             else:
                 fp = open(self.file_name, 'rb')
-                need_close = True
-
-            file_data = fp.read()
-            if need_close:
+                file_data = fp.read()
                 fp.close()
 
             check_sum_int = binascii.crc32(file_data) & 0xFFFFFFFF
@@ -66,11 +63,10 @@ class crc32sum_app:
                 sys.stdout.write("%s %s\n" %
                                  (crc32_str, fi.file_name.replace('\\', '/')))
 
-            except:
-                crc32_str = "--------"
-                sys.stderr.write("%s: %s: No such file or directory\n" %
-                                 (self.app_name, file_name))
+            except Exception as e:
                 result = "FAILED open or read"
+                sys.stderr.write("%s: %s: %s (%s).\n" %
+                                 (self.app_name, file_name, result, e))
                 self.read_fail_count += 1
 
         return self.read_fail_count
